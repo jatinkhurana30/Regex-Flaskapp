@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{%block head%}
+<title></title>
+{%endblock%}
+
+{% block body%}
+<h4>Question 1</h4>
+<p>Analyze the attached log and write a regex extract the following information:
+    <ul><li>Source IP</li>
+        <li>Destination IP</li>
+        <li>Realm</li>
+        <li>Time</li>
+        <li>Vpn</li>
+        <li>Username</li>
+    </ul>
+<p>2019-11-05T11:09:17-07:00 psa7k-a.company.gov PulseSecure: id=firewall time="2019-11-05 11:09:17" pri=6 fw=10.10.148.31 vpn=PSA7K-A user=aholder realm="company External" roles="Base-company-External, Base-Low-Users, sslvpn-Base-External" proto=https src=173.153.55.192 dst=52.96.15.2 dstname=outlook.office365.com type=vpn op=POST arg="/owa/service.svc?action=CreateItem&app=Mail&n=235" result=449 sent=1737 rcvd=54 agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/18.17763" duration=1 msg="WEB20174: WebRequest completed, POST to https://outlook.office365.com:443//owa/service.svc?action=CreateItem&app=Mail&n=235 from 52.96.15.2 result=449 sent=1737 received=54 in 1 seconds</p>
+</p>
+<h4>Answer 1</h4>
+<p>
+    <ol>
+        <li>Source Ip Address :		 (?<=https src=)([0-9]{1,3}[.][0-9]{1,3})[.][0-9]{1,3}[.][0-9]{1,3}</li>
+        <li>Destination Ip Address:	 (?<=dst=)([0-9]{1,3}[.][0-9]{1,3})[.][0-9]{1,3}[.][0-9]{1,3}</li>
+        <li>Realm :			 (?<=realm=").+?(?=")</li>
+        <li>Time : 			(?<=time=").+?(?=")</li>
+        <li> VPN : 			(?<=vpn=).+?(?= )</li>
+        <li>User:			(?<=user=).+?(?= )</li>
+    </ol>
+</p>
+<hr>
+<h4>Question 2</h4>
+<p>Use the attached log file and write a regex extract the following information:
+ <ol>
+    <li>The attached file contains logs from 2 endpoints, Identify the type of endpoints.</li>
+    <li>Identify the type of activity by each log.</li>
+    <li>Write regex to extract fields: time, host, user/user_email, realm, role, src_ip, dest_ip, app, protocol, outcome, event_code, additional_info. Extract each field with its own group name. E.g. (?<user>.+) Write a single regex to extract a particular field from all logs of common end-point type. [Note: All given field names may not be applicable to all given logs. Try to identify more (meaningful) fields</li>
+</ol>
+<h4>Answer 2</h4>
+<ol>
+{% for logs in log_list["machine1"]%}
+
+        <li>
+                <ul>
+                    {% for details in logs%}
+                    <li>{{details}}</li>
+                     {%endfor%}
+                </ul>
+
+        </li><br>
+
+{%endfor%}
+
+{% for logs in log_list["machine2"]%}
+
+        <li><ul>
+            {% for details in logs%}
+
+                    <li>{{details}}</li>
+
+            {%endfor%}
+ </ul>
+        </li><br>
+
+{%endfor%}
+      </ol>
+
+
+</p>
+<hr>
+<h4>Question 3</h4>
+<p>Write regex for the below log.<br>
+Extract time, user, permission type, and application type, file name, file's location and two timestamps
+    <p><555555551>Aug  27 15:01:05  Windows File Server (Agent) userfullname : GSLAB\161148a | username : 161148a | alertrulenames :  | permissiontype : Read & Execute | actiontype : Permission Remove File | membertype :  | acltype : Allow | threshold_alert_rule_candidates :  | path : \\DCA-APP-791.gslab.com\Performance_Test_791 | islocalaccess : True | newname :  | originalaccesspath : \\DCA-APP-791.gslab.com\D$\Scripts\Performance_Test_791 | logicalpaths :  | logicalbamids :  | applicationtype : Windows File Server (Agent) | timestamp : 2019-08-27T15:01:05.0000000 | timeofday : 54065000 | bamtypeid : 8 | oldpath :  | creation_timestamp : 2019-08-27T15:01:31.909+0000 | objectname : PasswordProtectedFile.xlsx | fileextension : xlsx | permissioninheritance : True | permissionsubject : GSLAB\Austin-GLOBAL-OPS-QUA-QA-CHANGE | bamid : 8 | brid : 9169882 | classificationcategory :  | ipaddress :  | domain : GSLAB | servername : DCA-APP-791 | oldname :  | bamname : DCA-APP-791 | newpath :  | subjecttype : File | membername :</p>
+</p>
+<h4>Answer 3</h4>
+ <ol>
+        <li>Time:				(?<=timeofday : ).+?(?= [|])</li>
+        <li>UserFullName				(?<=userfullname : ).+?(?= )</li>
+        <li>Permisson Type			(?<=permissiontype : ).+?(?= [|])	</li>
+        <li>Application Type			(?<=applicationtype : ).+?(?= [|])</li>
+        <li>File Name				(?<=objectname : ).+?(?= [|])</li>
+        <li>File Location			(?<=originalaccesspath : ).+?(?= [|])</li>
+         <li>Timestmps
+             <ul>
+                <li>(?<=timestamp : ).+?(?= [|])</li>
+                 <li>(?<=timestamp : ).+?(?= [|])</li>
+                 <li>(?<=creation_timestamp : ).+?(?= [|])</li>
+             </ul>
+         </li>
+    </ol>
+<hr>
+<h4>Question 4</h4>
+<p>Write a python program to detect HTML link and Text given with in a link</p>
+<p>Output Format:
+ The link and the text name must be separated by a "," (comma) with no spaces between them.  </p>
+    <ul>
+        <li><p>Sample Input 1:
+    <p> <XMP><a href="http://www.gslab.com/html/idm/html_links.cfm">GSLAB</a></XMP></p></p>
+    <p>  Sample output 1:
+                      http://www.gslab.com/html/idm/html_links.cfm,GSLAB</p></li>
+
+        <li>Sample Input 2:
+            <XMP>
+                <p><a href="http://www.ibm.com/html/v1/html_links.cfm">IBM</a></p>
+                <div class="more-info"><a href="http://www.kpoint.com">K-POINT</a></div>
+            </XMP>
+              Sample output 2:
+                http://www.ibm.com/html/v1/html_links.cfm,IBM
+                http://www.kpoint.com,K-Point </p></li>
+    </ul>
+    <h4>Answer 3</h4>
+    <div class="form-style-5">
+        <form action="/gslab/solvequestion4" method="POST">
+            <textarea rows = "5" cols = "1000" name = "input">
+            </textarea>
+
+            <input type="submit" value="Extract">
+        </form>
+         <ul>
+            {% for lines in output_answer4 %}
+
+                <li>
+            {{lines}}
+                </li>
+
+            {%endfor%}
+        </ul>
+    </div>
+{% endblock %}
